@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 //Transaction - defines our transaction structure
@@ -12,49 +12,84 @@ type Transaction struct {
 	WalletID        int
 }
 
-type Service struct {
+type transactionService struct {
 	DB *gorm.DB
 }
 
 type TransactionService interface {
-	//GetTransactionByID
-	//GetTransactions
-	//PostTransaction
-	//PutTransaction
-	//DeleteTransaction
+	GetTransactionByID(ID uint) (Transaction, error)
+	GetTransactions() (*[]Transaction, error)
+	GetTransactionsByWalletID(ID uint) (*[]Transaction, error)
+	PostTransaction(transaction Transaction) (Transaction, error)
+	PutTransaction(ID uint, NewTransaction Transaction) (Transaction, error)
+	DeleteTransaction(ID uint) (Transaction, error)
 }
 
 //GetTransactionByID - retrieves comments by their ID from the database
-func GetTransactionByID(ID uint) (Transaction, error) {
-	return Transaction{}, nil
+func (s *transactionService) GetTransactionByID(ID uint) (Transaction, error) {
+	var transaction Transaction
+	if result := s.DB.First(&transaction); result.Error != nil {
+
+	}
+	return transaction, nil
 }
 
-//GetTransaction - Get all transactions from the database
-func GetTransactions() (Transaction, error) {
-	return Transaction{}, nil
+//GetTransactions - Get all transactions from the database
+func (s *transactionService) GetTransactions() (*[]Transaction, error) {
+	var transaction []Transaction
+	if result := s.DB.Find(&transaction); result.Error != nil {
 
+	}
+	return &transaction, nil
+
+}
+
+//GetTransactionsByWalletID - Get transaction by walletid from the database
+func (s *transactionService) GetTransactionsByWalletID(ID uint) (*[]Transaction, error) {
+	var transaction []Transaction
+	if result := s.DB.Where("WalletID = ?", ID).Find(&transaction); result.Error != nil {
+
+	}
+	return &transaction, nil
 }
 
 //PostTransaction - add a new transaction to the database
-func PostTransaction(transaction Transaction) (Transaction, error) {
-	return Transaction{}, nil
+func (s *transactionService) PostTransaction(transaction Transaction) (Transaction, error) {
+
+	if result := s.DB.Save(&transaction); result.Error != nil {
+
+	}
+	return transaction, nil
 
 }
 
 //PutTransaction - Update a row from the database
-func PutTransaction(ID uint, newTransaction Transaction) (Transaction, error) {
-	return Transaction{}, nil
+func (s *transactionService) PutTransaction(ID uint, newTransaction Transaction) (Transaction, error) {
+	var transaction Transaction
+	transaction, err := s.GetTransactionByID(ID)
+	if err != nil {
+		return Transaction{}, err
+	}
+	if result := s.DB.Model(&transaction).Updates(newTransaction); result.Error != nil {
+
+		return Transaction{}, err
+	}
+	return transaction, nil
 
 }
 
 //DeleteTransaction - Delete a row from database
-func DeleteTransaction(ID uint) (Transaction, error) {
-	return Transaction{}, nil
+func (s *transactionService) DeleteTransaction(ID uint) (Transaction, error) {
+	var transaction Transaction
+	if result := s.DB.Delete(&transaction, ID); result.Error != nil {
+
+	}
+	return transaction, nil
 
 }
 
-func NewService(db *gorm.DB) *Service {
-	return &Service{
+func NewTransactionService(db *gorm.DB) *userService {
+	return &userService{
 		DB: db,
 	}
 }

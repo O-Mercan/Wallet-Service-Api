@@ -1,6 +1,6 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
@@ -11,50 +11,74 @@ type User struct {
 	Email       string
 }
 
-type Service struct {
+type userService struct {
 	DB *gorm.DB
 }
 
-type UserService struct {
-	//GetUserByID
-	//GetUsers
-	//PostUser
-	//PutUser
-	//DeleteUser
+type UserService interface {
+	GetUserByID(ID uint) (User, error)
+	GetUsers() (*[]User, error)
+	PostUser(user User) (User, error)
+	PutUser(ID uint, newUser User) (User, error)
+	DeleteUser(ID uint) (User, error)
 }
 
 //GetUserByID - retrieves comments by their ID from the database
-func GetUserByID(ID uint) (User, error) {
-	return User{}, nil
+func (s *userService) GetUserByID(ID uint) (User, error) {
+	var user User
+	if result := s.DB.First(&user); result.Error != nil {
+
+	}
+	return user, nil
 
 }
 
 //GetUser - Get all users from the database
-func GetUsers() (User, error) {
-	return User{}, nil
+func (s *userService) GetUsers() (*[]User, error) {
+	var user []User
+	if result := s.DB.Find(&user); result.Error != nil {
+
+	}
+	return &user, nil
 
 }
 
 //PostUser - add a new user to the database
-func PostUser(user User) (User, error) {
-	return User{}, nil
+func (s *userService) PostUser(user User) (User, error) {
+	if result := s.DB.Save(&user); result.Error != nil {
+
+	}
+	return user, nil
 
 }
 
 //PutUser - Update a row from the database
-func PutUser(ID uint, newuser User) (User, error) {
-	return User{}, nil
+func (s *userService) PutUser(ID uint, newUser User) (User, error) {
+	var user User
+	user, err := s.GetUserByID(ID)
+	if err != nil {
+		return User{}, err
+	}
+	if result := s.DB.Model(&user).Updates(newUser); result.Error != nil {
+
+		return User{}, err
+	}
+	return user, nil
 
 }
 
 //DeleteUser - Delete a row from database
-func DeleteUser(ID uint) (User, error) {
-	return User{}, nil
+func (s *userService) DeleteUser(ID uint) (User, error) {
+	var user User
+	if result := s.DB.Delete(&user, ID); result.Error != nil {
+
+	}
+	return user, nil
 
 }
 
-func NewService(db *gorm.DB) *Service {
-	return &Service{
+func NewUserService(db *gorm.DB) *userService {
+	return &userService{
 		DB: db,
 	}
 }
