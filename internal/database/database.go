@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/o-mercan/Wallet-Service-Api/config.go"
+	config "github.com/o-mercan/Wallet-Service-Api/config.go"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -25,4 +25,10 @@ func NewDatabase() (*gorm.DB, error) {
 	if err != nil {
 		return
 	}
+
+	postgresDB, err := db.DB()
+	if err := postgresDB.Ping(); err != nil {
+		return db, err
+	}
+	return db, nil
 }
