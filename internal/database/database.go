@@ -23,7 +23,7 @@ func NewDatabase() (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", dbHost, dbUserName, dbPassword, dbTable, dbPort)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return
+		return db, err
 	}
 
 	postgresDB, err := db.DB()
