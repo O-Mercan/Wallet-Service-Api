@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/o-mercan/Wallet-Service-Api/internal/database"
-	"github.com/o-mercan/Wallet-Service-Api/internal/model"
 	transportHTTP "github.com/o-mercan/Wallet-Service-Api/internal/transport/http"
+	wallet_service "github.com/o-mercan/Wallet-Service-Api/internal/wallet"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -27,11 +27,9 @@ func (a *App) Run() error {
 		return err
 	}
 
-	transactionService := model.NewTransactionService(db)
-	//userService := model.NewUserService(db)
-	//walletService := model.NewWalletService(db)
+	walletService := wallet_service.NewService(db)
 
-	handler := transportHTTP.NewHandler(transactionService)
+	handler := transportHTTP.NewHandler(walletService)
 	handler.SetUpRoutes()
 
 	if err := http.ListenAndServe(":9000", handler.Router); err != nil {
@@ -48,5 +46,4 @@ func main() {
 	if err := app.Run(); err != nil {
 		log.Error("Error starting API")
 	}
-
 }
