@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-
 	"github.com/o-mercan/Wallet-Service-Api/internal/database"
 	transportHTTP "github.com/o-mercan/Wallet-Service-Api/internal/transport/http"
 	wallet_service "github.com/o-mercan/Wallet-Service-Api/internal/wallet"

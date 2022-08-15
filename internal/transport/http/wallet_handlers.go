@@ -27,9 +27,6 @@ func (h *Handler) AddNewWallet(w http.ResponseWriter, r *http.Request) {
 		log.Panic(err)
 	}
 }
-func (h *Handler) GetWalletsByUserID(w http.ResponseWriter, r *http.Request) {
-
-}
 
 func (h *Handler) DepositWallet(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -131,6 +128,28 @@ func (h *Handler) GetWalletByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *Handler) GetWalletsByUsersID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	i, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		log.Error("Unable to parse UINT from ID, GetWalletsByUserID handler")
+		sendErrorResponse(w, "Unable to parse UINT from ID", err)
+
+	}
+	user, err := h.Service.GetWalletsByUsersID(uint(i))
+	if err != nil {
+		log.Error("Error retrieving Wallet By ID. GetWalletsByUserID handler")
+		sendErrorResponse(w, "Error retrieving Wallet By ID", err)
+		return
+	}
+
+	if err := sendOkResponse(w, user); err != nil {
+		log.Panic(err)
+	}
+}
+
 func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.Service.GetUsers()
@@ -141,6 +160,27 @@ func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := sendOkResponse(w, user); err != nil {
+		log.Panic(err)
+	}
+}
+func (h *Handler) GetUserByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	i, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		log.Error("Unable to parse UINT from ID, GetUserByID handler")
+		sendErrorResponse(w, "Unable to parse UINT from ID", err)
+
+	}
+	wlt, err := h.Service.GetUserByID(uint(i))
+	if err != nil {
+		log.Error("Error retrieving Wallet By ID. GetUserByID handler")
+		sendErrorResponse(w, "Error retrieving Wallet By ID", err)
+		return
+	}
+
+	if err := sendOkResponse(w, wlt); err != nil {
 		log.Panic(err)
 	}
 }

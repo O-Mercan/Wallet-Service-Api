@@ -21,18 +21,18 @@ type WalletService interface {
 	GetTransactionsReport()
 	GetWalletByID(ID uint) (model.Wallet, error)
 	GetUsers() (*[]model.User, error)
-	GetUserWalletsByID(ID uint) (*[]model.Wallet, error)
+	GeWalletsByUsersID(ID uint) (model.Wallet, error)
+	GetUserByID(ID uint) (model.User, error)
 }
 
 func (s *Service) AddNewWallet(wallet model.Wallet) (model.Wallet, error) {
-	s.DB.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&wallet)
 	if result := s.DB.Create(&wallet); result.Error != nil {
 		log.WithFields(log.Fields{
 			"Function": "AddNewWallet",
 		}).Error(result.Error.Error())
 		return model.Wallet{}, nil
 	}
-
+	s.DB.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&wallet)
 	return wallet, nil
 }
 
@@ -81,13 +81,35 @@ func (s *Service) GetWalletByID(ID uint) (model.Wallet, error) {
 	var wallet model.Wallet
 	if result := s.DB.First(&wallet, ID); result.Error != nil {
 		log.WithFields(log.Fields{
-			"productID": wallet.ID,
+			"WalletID":  wallet.ID,
 			"requestID": ID,
 			"Function":  "GetWallet",
 		}).Error(result.Error.Error())
 		return model.Wallet{}, nil
 	}
 	return wallet, nil
+}
+
+func (s *Service) GetWalletsByUsersID(ID uint) (model.User, error) {
+	var user model.User
+	if result := s.DB.First(&user, ID); result.Error != nil {
+		return model.User{}, nil
+	}
+
+	return model.User{Wallets: user.Wallets}, nil
+}
+
+func (s *Service) GetUserByID(ID uint) (model.User, error) {
+	var user model.User
+	if result := s.DB.First(&user, ID); result.Error != nil {
+		log.WithFields(log.Fields{
+			"UserID":    user.ID,
+			"requestID": ID,
+			"Function":  "GetUserByID",
+		}).Error(result.Error.Error())
+		return model.User{}, nil
+	}
+	return user, nil
 }
 
 func (s *Service) GetUsers() (*[]model.User, error) {
