@@ -2,11 +2,11 @@ package wallet
 
 import (
 	"encoding/json"
-	"net/http"
-
+	"fmt"
 	model "github.com/o-mercan/Wallet-Service-Api/internal/model"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"net/http"
 )
 
 type Service struct {
@@ -26,12 +26,14 @@ type WalletService interface {
 }
 
 func (s *Service) AddNewWallet(wallet model.Wallet) (model.Wallet, error) {
-	if result := s.DB.Create(&wallet); result.Error != nil {
+	if result1 := s.DB.Limit(1).FirstOrCreate(&wallet, model.Wallet{UserID: wallet.UserID, Currency: wallet.Currency}); result1.Error != nil {
 		log.WithFields(log.Fields{
 			"Function": "AddNewWallet",
-		}).Error(result.Error.Error())
+		}).Error(result1.Error.Error())
+		fmt.Println("You have already this account, Choose different Currency")
 		return model.Wallet{}, nil
 	}
+
 	s.DB.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&wallet)
 	return wallet, nil
 }

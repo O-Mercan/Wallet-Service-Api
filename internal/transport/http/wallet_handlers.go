@@ -2,12 +2,11 @@ package http
 
 import (
 	"encoding/json"
-	"net/http"
-	"strconv"
-
 	"github.com/gorilla/mux"
 	"github.com/o-mercan/Wallet-Service-Api/internal/model"
 	log "github.com/sirupsen/logrus"
+	"net/http"
+	"strconv"
 )
 
 func (h *Handler) AddNewWallet(w http.ResponseWriter, r *http.Request) {
