@@ -7,9 +7,10 @@ import (
 //Wallet - defines our wallet structure
 type Wallet struct {
 	gorm.Model
-	Amount   float64
-	Currency string
-	UserID   uint
+	Amount        float64
+	Currency      string
+	UserID        uint
+	TransactionID uint
 }
 
 type User struct {
@@ -18,4 +19,8 @@ type User struct {
 	Surname string
 	Email   string
 	Wallets []Wallet `gorm:"foreignKey:UserID"`
+}
+type Transaction struct {
+	gorm.Model
+	Wallets []Wallet `gorm:"foreignKey:TransactionID"`
 }

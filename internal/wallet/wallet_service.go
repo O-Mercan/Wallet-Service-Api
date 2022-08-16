@@ -18,7 +18,7 @@ type WalletService interface {
 	DepositWallet(ID uint, newWallet model.Wallet) (model.Wallet, error)
 	WithdrawWallet(ID uint, newWallet model.Wallet) (model.Wallet, error)
 	GetCurrentBalance(ID uint) (model.Wallet, error)
-	GetTransactionsReport()
+	GetTransactionsReport() (*[]model.Transaction, error)
 	GetWalletByID(ID uint) (model.Wallet, error)
 	GetUsers() (*[]model.User, error)
 	GeWalletsByUsersID(ID uint) (model.Wallet, error)
@@ -40,6 +40,7 @@ func (s *Service) AddNewWallet(wallet model.Wallet) (model.Wallet, error) {
 
 func (s *Service) DepositWallet(ID uint, newWallet model.Wallet) (model.Wallet, error) {
 	var wallet model.Wallet
+	var transaction model.Transaction
 	wlt, err := s.GetWalletByID(ID)
 	if err != nil {
 		return model.Wallet{}, err
@@ -48,12 +49,13 @@ func (s *Service) DepositWallet(ID uint, newWallet model.Wallet) (model.Wallet, 
 	if result1 := s.DB.Model(&wlt).Update("amount", gorm.Expr("amount + ?", depositAmount)); result1.Error != nil {
 		return model.Wallet{}, nil
 	}
-
+	s.DB.Create(&transaction)
 	return wallet, nil
 }
 
 func (s *Service) WithdrawWallet(ID uint, newWallet model.Wallet) (model.Wallet, error) {
 	var wallet model.Wallet
+	var transaction model.Transaction
 	wlt, err := s.GetWalletByID(ID)
 	if err != nil {
 		return model.Wallet{}, err
@@ -62,6 +64,7 @@ func (s *Service) WithdrawWallet(ID uint, newWallet model.Wallet) (model.Wallet,
 	if result1 := s.DB.Model(&wlt).Update("amount", gorm.Expr("amount - ?", withdrawAmount)); result1.Error != nil {
 		return model.Wallet{}, nil
 	}
+	s.DB.Create(transaction)
 
 	return wallet, nil
 }
@@ -75,8 +78,13 @@ func (s *Service) GetCurrentBalance(ID uint) (model.Wallet, error) {
 	return model.Wallet{Amount: wallet.Amount}, nil
 }
 
-func (s *Service) GetTransactionsReport() {
+func (s *Service) GetTransactionsReport() (*[]model.Transaction, error) {
+	var transaction []model.Transaction
+	if result := s.DB.Preload("Wallet").Preload("Wallet.UserID").Find(&transaction); result.Error != nil {
+		return &transaction, nil
+	}
 
+	return &transaction, nil
 }
 
 func (s *Service) GetWalletByID(ID uint) (model.Wallet, error) {
