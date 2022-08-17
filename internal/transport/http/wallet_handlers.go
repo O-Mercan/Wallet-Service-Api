@@ -2,33 +2,33 @@ package http
 
 import (
 	"encoding/json"
-
-	"github.com/gorilla/mux"
-	"github.com/o-mercan/Wallet-Service-Api/internal/model"
-
-	//wallet_service "github.com/o-mercan/Wallet-Service-Api/internal/wallet"
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/mux"
+	"github.com/o-mercan/Wallet-Service-Api/internal/model"
 	log "github.com/sirupsen/logrus"
 )
 
 func (h *Handler) AddNewWallet(w http.ResponseWriter, r *http.Request) {
 	var wallet model.Wallet
 	if err := json.NewDecoder(r.Body).Decode(&wallet); err != nil {
-		log.Error("Error retrieving Product By ID. PostProduct handler")
+		log.Error("Error retrieving Wallet By ID. AddNewWallet handler")
 		sendErrorResponse(w, "Failed to decode JSON Body", err)
 		return
 	}
-	wallet, err := h.Service.PostWallet(wallet)
+	wallet, err := h.Service.AddNewWallet(wallet)
 	if err != nil {
-		log.Error("Error retrieving Product By ID. PostProduct handler")
-		sendErrorResponse(w, "Failed to create new product", err)
+		log.Error("Error retrieving Wallet By ID. AddNewWallet handler")
+		sendErrorResponse(w, "Failed to create new wallet", err)
 	}
 
 	if err := sendOkResponse(w, wallet); err != nil {
 		log.Panic(err)
 	}
+}
+func (h *Handler) GetWalletsByUserID(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func (h *Handler) DepositWallet(w http.ResponseWriter, r *http.Request) {
@@ -109,10 +109,7 @@ func (h *Handler) GetTransactionsReport(w http.ResponseWriter, r *http.Request) 
 
 }
 
-///////////////////////////////////////////
-
 func (h *Handler) GetWalletByID(w http.ResponseWriter, r *http.Request) {
-
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -134,61 +131,12 @@ func (h *Handler) GetWalletByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) PostUser(w http.ResponseWriter, r *http.Request) {
-	var user model.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		log.Error("Error retrieving Product By ID. PostProduct handler")
-		sendErrorResponse(w, "Failed to decode JSON Body", err)
-		return
-	}
-	user, err := h.Service.PostUser(user)
-	if err != nil {
-		log.Error("Error retrieving Product By ID. PostProduct handler")
-		sendErrorResponse(w, "Failed to create new product", err)
-	}
-
-	if err := sendOkResponse(w, user); err != nil {
-		log.Panic(err)
-	}
-}
 func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.Service.GetUsers()
 	if err != nil {
-		log.Error("Failed to get products, GetProducts handler")
-		sendErrorResponse(w, "Failed to get products", err)
-		return
-	}
-
-	if err := sendOkResponse(w, user); err != nil {
-		log.Panic(err)
-	}
-}
-
-func (h *Handler) PostWallet(w http.ResponseWriter, r *http.Request) {
-	var wallet model.Wallet
-	if err := json.NewDecoder(r.Body).Decode(&wallet); err != nil {
-		log.Error("Error retrieving Product By ID. PostProduct handler")
-		sendErrorResponse(w, "Failed to decode JSON Body", err)
-		return
-	}
-	wallet, err := h.Service.PostWallet(wallet)
-	if err != nil {
-		log.Error("Error retrieving Product By ID. PostProduct handler")
-		sendErrorResponse(w, "Failed to create new product", err)
-	}
-
-	if err := sendOkResponse(w, wallet); err != nil {
-		log.Panic(err)
-	}
-}
-
-func (h *Handler) GetWallets(w http.ResponseWriter, r *http.Request) {
-
-	user, err := h.Service.GetWallets()
-	if err != nil {
-		log.Error("Failed to get products, GetProducts handler")
-		sendErrorResponse(w, "Failed to get products", err)
+		log.Error("Failed to get products, GetUsers handler")
+		sendErrorResponse(w, "Failed to get wallets", err)
 		return
 	}
 
