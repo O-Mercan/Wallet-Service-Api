@@ -28,5 +28,7 @@ func (h *Handler) SetUpRoutes() {
 	h.Router.HandleFunc("/api/v1/transactions/reports", h.GetTransactionsReport).Methods("GET")
 	h.Router.HandleFunc("/api/v1/wallets/{id}", h.GetWalletByID).Methods("GET")
 	h.Router.HandleFunc("/api/v1/users", h.GetUsers).Methods("GET")
+	h.Router.HandleFunc("/api/v1/users/wallets/{id}", h.GetWalletsByUsersID).Methods("GET")
+	h.Router.HandleFunc("/api/v1/user/{id}", h.GetUserByID).Methods("GET")
 
 }

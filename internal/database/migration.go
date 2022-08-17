@@ -1,8 +1,7 @@
 package database
 
 import (
-	"github.com/o-mercan/Wallet-Service-Api/internal/model"
-
+	model "github.com/o-mercan/Wallet-Service-Api/internal/model"
 	"gorm.io/gorm"
 )
 
