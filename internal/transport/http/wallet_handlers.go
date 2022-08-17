@@ -102,7 +102,16 @@ func (h *Handler) GetCurrentBalance(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetTransactionsReport(w http.ResponseWriter, r *http.Request) {
+	user, err := h.Service.GetTransactionsReport()
+	if err != nil {
+		log.Error("Failed to get reports, GetTransactionsReport handler")
+		sendErrorResponse(w, "Failed to get transactions", err)
+		return
+	}
 
+	if err := sendOkResponse(w, user); err != nil {
+		log.Panic(err)
+	}
 }
 
 func (h *Handler) GetWalletByID(w http.ResponseWriter, r *http.Request) {
